@@ -10,9 +10,9 @@ I was able to run the sbt project and hit my localhost to get a 200 from the hea
 ## Step 2: Initial Endpoints
 I've created 2 endpoints
 1) POST the tumble request. Returns an ID for the request.
-2) GET for polling for the completion status.
+2) GET for polling for the completion status given the ID returned by the POST.
 
-This is supposed to happen at random time intervals to confuse prying eyes. 
+The deposits are supposed to happen at random time intervals to confuse prying eyes. 
 Therefore, we should spawn a future that can take a while to complete
 and provide a way for the client to verify once it's done.
 
