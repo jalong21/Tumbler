@@ -1,23 +1,33 @@
 package services
 
-import akka.actor.{Actor, Timers}
+import akka.actor.{Actor, Props, Timers}
+import net.sf.ehcache.{CacheManager, Element}
 import play.api.Configuration
 import play.api.cache.ehcache.EhCacheApi
+import services.CoinTransferActor.{TransferToBank, TransferToClient, TransferToHouse}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.DurationInt
 import scala.util.Random
 
-case class TransferToHouse(tumbleID: String, fromAddress: String, toAddress: String, finalClientAddress: String, amount: Double)
+object CoinTransferActor {
+  def props(conf: Configuration,
+            geminiWS: GeminiWebService) = Props(classOf[CoinTransferActor], conf, geminiWS)
 
-case class TransferToClient(tumbleID: String, fromAddress: String, toAddress: String, amount: Double)
+  case class TransferToHouse(tumbleID: String, fromAddress: String, toAddress: String, finalClientAddress: String, amount: Double)
 
-case class TransferToBank(fromAddress: String, toAddress: String, amount: Double)
+  case class TransferToClient(tumbleID: String, fromAddress: String, toAddress: String, amount: Double)
 
+  case class TransferToBank(fromAddress: String, toAddress: String, amount: Double)
 
-class CoinTransferActor()(conf: Configuration,
-                          geminiWS: GeminiWebService,
-                          cache: EhCacheApi) extends Actor with Timers {
+}
+
+class CoinTransferActor(conf: Configuration,
+                          geminiWS: GeminiWebService) extends Actor with Timers {
+
+  val cacheManager = CacheManager.getInstance()
+  cacheManager.addCacheIfAbsent("TumbleCache")
+  val cache = cacheManager.getCache("TumbleCache")
 
   val MAX_WAIT_TIME = conf.getOptional[Int]("jobcoin.maxTumbleDurationMins")
     .getOrElse(30)
@@ -41,10 +51,9 @@ class CoinTransferActor()(conf: Configuration,
         .map(_ => {
           // transfer to clientAddress or Bank complete.
           // update cache for tumbleID
-          cache.get[Double](tumbleID)
-            .map(cacheStatus => cacheStatus
-              .map(status => status + amount)
-              .map(updatedAmount => cache.set(tumbleID, updatedAmount, 2.hours)))
+          Option(cache.get(tumbleID).getObjectValue.asInstanceOf[Double])
+            .map(status => status + amount)
+              .map(updatedAmount => cache.put(new Element(tumbleID, updatedAmount)))
         })
     }
     case TransferToBank(fromAddress: String, toAddress: String, amount: Double) => {

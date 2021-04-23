@@ -1,8 +1,11 @@
 package services
 
-import akka.actor.{ActorSystem, Props}
+import akka.actor._
+import akka.stream.ActorMaterializer
 import models.TumbleDTO
-import play.api.cache.ehcache.EhCacheApi
+import net.sf.ehcache.{CacheManager, Element}
+import play.api.Configuration
+import services.CoinTransferActor.TransferToHouse
 
 import java.util.UUID
 import javax.inject.Inject
@@ -11,18 +14,23 @@ import scala.concurrent.duration.DurationInt
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.Random
 
-class JobCoinTumbler @Inject()(cache: EhCacheApi,
+class JobCoinTumbler @Inject()(conf: Configuration,
                                geminiWS: GeminiWebService) {
+
+  val cacheManager = CacheManager.getInstance()
+  cacheManager.addCacheIfAbsent("TumbleCache")
+  val cache = cacheManager.getCache("TumbleCache")
 
   val cacheDuration = 2.hours
 
   val system = ActorSystem("CoinActorSystem")
-  val transferActor = system.actorOf(Props[CoinTransferActor](), name = "CoinTransferActor")
+  val transferActor = system.actorOf(CoinTransferActor.props(conf, geminiWS), name = "CoinTransferActor")
 
-  def checkForCompletion(tumbleId: String): Future[String] = cache.get[Double](tumbleId)
-      .flatMap(cachedValue => cachedValue
-        .map( percent => Future.successful( s"TumbleID:$tumbleId - Percent Complete: $percent"))
-      .getOrElse(Future.successful("TumbleId not Found!")))
+  def checkForCompletion(tumbleId: String): Future[String] = {
+    Option(cache.get(tumbleId).getObjectValue.asInstanceOf[Double])
+      .map( percent => Future.successful( s"TumbleID:$tumbleId - Percent Complete: $percent"))
+        .getOrElse(Future.successful("TumbleId not Found!"))
+  }
 
   def initializeTumble(tumbleRequest: TumbleDTO): Future[String] = {
 
@@ -36,7 +44,7 @@ class JobCoinTumbler @Inject()(cache: EhCacheApi,
             // fire off Future to process transaction,
             // put transaction in cache for future reference.
             val requestId = UUID.randomUUID().toString
-            cache.set(requestId, 0.0, cacheDuration)
+            cache.put(new Element(requestId, 0.0))
             Future { tumble(tumbleRequest, requestId)}
             // return request ID for client's future use.
             Future.successful(requestId)

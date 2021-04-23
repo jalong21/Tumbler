@@ -9,4 +9,5 @@ scalaVersion := "2.13.5"
 libraryDependencies ++= Seq(ehcache,
   ws,
   guice,
-  filters)
+  filters,
+  "net.sf.ehcache" % "ehcache" % "2.10.6" )
