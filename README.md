@@ -1,5 +1,23 @@
-# Progression Notes
 
+
+# API
+### POST: /v1/initializeTumble
+Body:
+```json
+{
+"amount":1.0,
+"fromAddress":"fromAddress",
+"toAddresses":["toAddress_01", "toAddress_02", "toAddress_03"]
+}
+```
+Returns: UUID representing the job for polling later
+
+### GET: /v1/pollForCompletion
+Params: "tumbleId" -> UUID (provided by initializeTumble response)
+Returns: String in the format: "TumbleID:51da3352-3802-44f3-8083-6bfb398e0667 - Percent Complete:  12"
+
+
+# Progression Notes
 ## Step 1: Seeding Project (Thurs April 22nd)
 Seeding project didn't go as smoothly as would be ideal. 
 I started this project fresh, no template used other than the starting Intellij Scala Setup.
