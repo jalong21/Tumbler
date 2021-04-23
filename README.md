@@ -25,7 +25,7 @@ I've created 10 house addresses
 2) put those random amounts into the house addresses until requested amounts have been withdrawn
 3) wait a random amount of time before withdrawing from house addresses
 4) adjust amount to withdraw from house by 2% as a fee
-5) choose a random to address provided for each of the house address to deposit into
+5) choose a random client to address provided for each of the house address to deposit into
 
 ## Step 4: Daily Skimmer Job
 Create a job that runs every 24 hours that caps the house addresses.
