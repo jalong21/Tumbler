@@ -23,4 +23,14 @@ class GeminiWebService @Inject()(ws: WSClient,
       .getOrElse(Future.failed(new Exception("Url Configuration Missing!")))
   }
 
+  def transferCoins(fromAddress: String, tooAddress: String, amount: String): Future[AddressInfo] = {
+    conf.getOptional[String]("jobcoin.apiAddressesUrl")
+      .map(url => ws.url(s"url/$fromAddress")
+        .post("")
+        .map(response => {
+          Json.fromJson[AddressInfo](Json.parse(response.body)).get
+        }))
+      .getOrElse(Future.failed(new Exception("Url Configuration Missing!")))
+  }
+
 }
