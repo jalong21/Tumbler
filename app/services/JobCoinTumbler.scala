@@ -19,7 +19,7 @@ class JobCoinTumbler @Inject()(cache: EhCacheApi,
   val system = ActorSystem("CoinActorSystem")
   val transferActor = system.actorOf(Props[CoinTransferActor](), name = "CoinTransferActor")
 
-  def checkForCompletion(tumbleId: String) = cache.get[Double](tumbleId)
+  def checkForCompletion(tumbleId: String): Future[String] = cache.get[Double](tumbleId)
       .flatMap(cachedValue => cachedValue
         .map( percent => Future.successful( s"TumbleID:$tumbleId - Percent Complete: $percent"))
       .getOrElse(Future.successful("TumbleId not Found!")))
@@ -81,7 +81,7 @@ class JobCoinTumbler @Inject()(cache: EhCacheApi,
         })
   }
 
-  def getRandomClientAddress(addresses: Seq[String]) = {
+  def getRandomClientAddress(addresses: Seq[String]): String = {
     addresses(Random.nextInt(addresses.length))
   }
 }
