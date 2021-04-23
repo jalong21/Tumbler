@@ -12,8 +12,7 @@ import scala.concurrent.duration.DurationInt
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class JobCoinTumbler @Inject()(WS: WSClient,
-                               conf: Configuration,
+class JobCoinTumbler @Inject()(conf: Configuration,
                                cache: EhCacheApi) {
 
   val cacheDuration = 2.hours
