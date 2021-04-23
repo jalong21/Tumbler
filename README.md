@@ -40,7 +40,7 @@ Any amount over the cap will be deposited into the "bank" address as payment for
 
 ## Step 5: Nice To Haves (TODO, Maybe . . . )
 I found one bug. When I'm updating percent complete, I have a race condition where one cache update overrides the other 
-if the're close enough. Need to fix.
+if they're close enough. Need to fix.
 1) Instead of using pre-made house addresses, create new ones for each tumble.
 2) Code Cleanup. Some of this isn't quite as pretty as I'd like.
 3) Unit tests. I'd obviously do this in a production environment
