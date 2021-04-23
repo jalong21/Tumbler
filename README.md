@@ -39,6 +39,7 @@ Create a job that runs every 24 hours that caps the house addresses.
 Any amount over the cap will be deposited into the "bank" address as payment for the service.
 
 ## Step 5: Nice To Haves (TODO, Maybe . . . )
-1) Code Cleanup. Some of this isn't quite as pretty as I'd like.
-2) Unit tests. I'd obviously do this in a production environment
-3) Docker Setup. Adding docker files isn't difficult and helps with deployment immensely 
+1) Instead of using pre-made house addresses, create new ones for each tumble.
+2) Code Cleanup. Some of this isn't quite as pretty as I'd like.
+3) Unit tests. I'd obviously do this in a production environment
+4) Docker Setup. Adding docker files isn't difficult and helps with deployment immensely 

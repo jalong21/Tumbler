@@ -4,7 +4,7 @@ import akka.actor._
 import akka.stream.ActorMaterializer
 import models.TumbleDTO
 import net.sf.ehcache.{CacheManager, Element}
-import play.api.Configuration
+import play.api.{Configuration, Logger}
 import services.CoinTransferActor.TransferToHouse
 
 import java.util.UUID
@@ -16,6 +16,8 @@ import scala.util.Random
 
 class JobCoinTumbler @Inject()(conf: Configuration,
                                geminiWS: GeminiWebService) {
+
+  val log = Logger(this.getClass.getName)
 
   val cacheManager = CacheManager.getInstance()
   cacheManager.addCacheIfAbsent("TumbleCache")
@@ -34,6 +36,7 @@ class JobCoinTumbler @Inject()(conf: Configuration,
 
   def initializeTumble(tumbleRequest: TumbleDTO): Future[String] = {
 
+    log.debug("Starting Tumble")
     // check that address has requested funds
     geminiWS.getAddressInfo(tumbleRequest.fromAddress)
       .flatMap(addressInfo => {
@@ -48,7 +51,7 @@ class JobCoinTumbler @Inject()(conf: Configuration,
             Future { tumble(tumbleRequest, requestId)}
             // return request ID for client's future use.
             Future.successful(requestId)
-          }).getOrElse( Future.failed(new Exception("Error Processing Request. This Could Mean the From Address Had Insufficient Funds.")))
+          }).getOrElse( Future.failed(ExceptionLogger.newException("Error Processing Request. This Could Mean the From Address Had Insufficient Funds.")))
       })
   }
 
@@ -56,14 +59,15 @@ class JobCoinTumbler @Inject()(conf: Configuration,
 
     // step 1: send random amounts to up to 10 different house addresses
     // I've created a set of 10 House addresses via the UI to split the coins into
-    var percentLeft = 100.0
+    var percentLeft = 1.0
     (1 to 10)
       .map(i => {
-        val percentToMove = Random.between(0.0, 25.0)
-        if ( percentLeft > 0 && i == 10) {
+        val percentToMove = Random.between(0.0, 0.25)
+        log.warn(s"count: $i, percentToMove: $percentToMove, percentLeft: $percentLeft")
+        if ( percentLeft > 0.0 && i == 10) {
           // we've gotten to the last house address and still haven't used up all coins.
           // put the rest in here
-          percentLeft = 0
+          percentLeft = 0.0
           Some((s"HouseAddress-10", percentLeft * tumbleRequest.amount))
         }
         else if (percentToMove < percentLeft) {
@@ -71,9 +75,9 @@ class JobCoinTumbler @Inject()(conf: Configuration,
           percentLeft = percentLeft - percentToMove
           Some((s"HouseAddress-0$i", percentToMove * tumbleRequest.amount))
         }
-        else if (percentLeft > 0) {
+        else if (percentLeft > 0.0) {
           // the percent to move is greater or equal to the percent left, finish it off
-          percentLeft = 0
+          percentLeft = 0.0
           Some((s"HouseAddress-0$i", percentLeft * tumbleRequest.amount))
         }
         else {
