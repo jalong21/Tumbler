@@ -1,18 +1,19 @@
 # Progression Notes
 
 ## Step 1: Seeding Project (Thurs April 22nd)
-Seeding project didn't go as smoothly as would be ideal.
-The default scala project in Intellij doesn't seem up to date.
+Seeding project didn't go as smoothly as would be ideal. 
+I started this project fresh, no template used other than the starting Intellij Scala Setup.
+The default scala project in Intellij doesn't seem up to date, or it was expecting a different framework because I had to make changes.
 I've been adding files such as conf/routes for API endpoints and project/plugins.sbt to get play framework set up correctly.
 
-I was able to run the sbt project and hit my localhost to get a 200 from the health endpoint I set up
+I was able to run the sbt project and hit my localhost to get a 200 from the health endpoint I set up.
 
 This took an hour or two
 
 ## Step 2: Initial Endpoints (Thurs April 22nd)
 I've created 2 endpoints
-1) POST the tumble request. Returns an ID for the request.
-2) GET for polling for the completion status given the ID returned by the POST.
+1) POST the tumble request. Fires off the tumbler process asynchronously and returns a UUID that can be used to poll for status.
+2) GET for polling the completion status given the ID returned by the POST.
 
 The deposits are supposed to happen at random time intervals to confuse prying eyes. 
 Therefore, we should spawn a future that can take a while to complete
