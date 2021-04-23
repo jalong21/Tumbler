@@ -26,10 +26,10 @@ class TumbleController @Inject()(cc: ControllerComponents,
               log.warn("calling tumbler")
               Try(Await.result(tumbler.initializeTumble(tumbleRequest), 5.minutes)) match {
                 case Success(tumbleId) => Ok(tumbleId)
-                case Failure(_) => InternalServerError("Error Starting Transfer")
+                case Failure(ex) => InternalServerError(s"Error Starting Transfer. ${ex.getMessage}")
               }
             }
-            case Failure(_) => BadRequest("Error Parsing Request Body!")
+            case Failure(ex) => BadRequest(s"Error Parsing Request Body! ${ex.getMessage}")
           }
         }).getOrElse(BadRequest("Payload Missing From Request"))
   }
@@ -37,7 +37,7 @@ class TumbleController @Inject()(cc: ControllerComponents,
   def isTumbleComplete(tumbleId: String) = Action {
     request => Try(Await.result(tumbler.checkForCompletion(tumbleId), 5.minutes)) match {
       case Success(status) => Ok(status)
-      case Failure(_) => InternalServerError("Error Checking Status")
+      case Failure(ex) => InternalServerError(s"Error Checking Status.  ${ex.getMessage}")
     }
   }
 }

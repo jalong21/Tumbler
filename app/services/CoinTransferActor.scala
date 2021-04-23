@@ -55,7 +55,10 @@ class CoinTransferActor(conf: Configuration,
           // transfer to clientAddress or Bank complete.
           // update cache for tumbleID
           Option(cache.get(tumbleID).getObjectValue.asInstanceOf[Double])
-            .map(status => status + amount)
+            .map(status => {
+              log.warn(s"current status: $status. New status: ${status+amount}")
+              status + amount
+            })
               .map(updatedAmount => cache.put(new Element(tumbleID, updatedAmount)))
         })
     }

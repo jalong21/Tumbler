@@ -30,7 +30,10 @@ class JobCoinTumbler @Inject()(conf: Configuration,
 
   def checkForCompletion(tumbleId: String): Future[String] = {
     Option(cache.get(tumbleId).getObjectValue.asInstanceOf[Double])
-      .map( percent => Future.successful( s"TumbleID:$tumbleId - Percent Complete: $percent"))
+      .map( percent => {
+        val doubleString = String.format("%3.0f", percent * 100.0)
+        Future.successful( s"TumbleID:$tumbleId - Percent Complete: $doubleString")
+      })
         .getOrElse(Future.successful("TumbleId not Found!"))
   }
 
@@ -67,8 +70,9 @@ class JobCoinTumbler @Inject()(conf: Configuration,
         if ( percentLeft > 0.0 && i == 10) {
           // we've gotten to the last house address and still haven't used up all coins.
           // put the rest in here
+          val distribution = Some((s"HouseAddress-10", percentLeft * tumbleRequest.amount))
           percentLeft = 0.0
-          Some((s"HouseAddress-10", percentLeft * tumbleRequest.amount))
+          distribution
         }
         else if (percentToMove < percentLeft) {
           // as long as the current percentToMove is greater than what's remaining
@@ -77,8 +81,9 @@ class JobCoinTumbler @Inject()(conf: Configuration,
         }
         else if (percentLeft > 0.0) {
           // the percent to move is greater or equal to the percent left, finish it off
+          val distribution = Some((s"HouseAddress-0$i", percentLeft * tumbleRequest.amount))
           percentLeft = 0.0
-          Some((s"HouseAddress-0$i", percentLeft * tumbleRequest.amount))
+          distribution
         }
         else {
           // we've used up all the dough, remaining addresses aren't needed
