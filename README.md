@@ -6,6 +6,7 @@ The default scala project in Intellij doesn't seem up to date.
 I've been adding files such as conf/routes for API endpoints and project/plugins.sbt to get play framework set up correctly.
 
 I was able to run the sbt project and hit my localhost to get a 200 from the health endpoint I set up
+
 This took an hour or two
 
 ## Step 2: Initial Endpoints (Thurs April 22nd)
@@ -19,6 +20,7 @@ and provide a way for the client to verify once it's done.
 
 The controller has some basic error handling, 
 but the meat of the tumbler hasn't been started yet.
+
 This took an hour or two
 
 ## Step 3: Tumbler Logic (Friday April 23rd)
@@ -28,7 +30,8 @@ I've created 10 house addresses
 3) wait a random amount of time before withdrawing from house addresses
 4) adjust amount to withdraw from house by 2% as a fee
 5) choose a random client to address provided for each of the house address to deposit into
-This took two or three hours
+
+This took two or three hours, including refinement of stuff I did in step 2
 
 ## Step 4: Daily Skimmer Job (TODO)
 Create a job that runs every 24 hours that caps the house addresses.
