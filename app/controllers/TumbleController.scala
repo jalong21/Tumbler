@@ -1,6 +1,5 @@
 package controllers
 
-import akka.actor.ActorSystem
 import models.TumbleDTO
 import play.api.Logger
 import play.api.libs.json.Json

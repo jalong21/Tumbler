@@ -1,5 +1,6 @@
 package services
 
+import Utils.ExceptionLogger
 import akka.actor._
 import play.api.libs.json.Json
 import models.TumbleDTO

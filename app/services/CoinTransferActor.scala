@@ -3,7 +3,6 @@ package services
 import akka.actor.{Actor, Props, Timers}
 import net.sf.ehcache.{CacheManager, Element}
 import play.api.{Configuration, Logger}
-import play.api.cache.ehcache.EhCacheApi
 import services.CoinTransferActor.{TransferToBank, TransferToClient, TransferToHouse}
 
 import scala.concurrent.ExecutionContext.Implicits.global
