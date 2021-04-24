@@ -1,7 +1,7 @@
 package services
 
 import akka.actor._
-import akka.stream.ActorMaterializer
+import play.api.libs.json.Json
 import models.TumbleDTO
 import net.sf.ehcache.{CacheManager, Element}
 import play.api.{Configuration, Logger}
@@ -60,42 +60,22 @@ class JobCoinTumbler @Inject()(conf: Configuration,
 
   def tumble(tumbleRequest: TumbleDTO, requestId: String) = {
 
-    // step 1: send random amounts to up to 10 different house addresses
-    // I've created a set of 10 House addresses via the UI to split the coins into
+    // send random amounts to up to 10 different house addresses
     var percentLeft = 1.0
-    (1 to 10)
-      .map(i => {
-        val percentToMove = Random.between(0.0, 0.25)
-        log.warn(s"count: $i, percentToMove: $percentToMove, percentLeft: $percentLeft")
-        if ( percentLeft > 0.0 && i == 10) {
-          // we've gotten to the last house address and still haven't used up all coins.
-          // put the rest in here
-          val distribution = Some((s"HouseAddress-10", percentLeft * tumbleRequest.amount))
-          percentLeft = 0.0
-          distribution
-        }
-        else if (percentToMove < percentLeft) {
-          // as long as the current percentToMove is greater than what's remaining
-          percentLeft = percentLeft - percentToMove
-          Some((s"HouseAddress-0$i", percentToMove * tumbleRequest.amount))
-        }
-        else if (percentLeft > 0.0) {
-          // the percent to move is greater or equal to the percent left, finish it off
-          val distribution = Some((s"HouseAddress-0$i", percentLeft * tumbleRequest.amount))
-          percentLeft = 0.0
-          distribution
-        }
-        else {
-          // we've used up all the dough, remaining addresses aren't needed
-          None
-        }
-        // we now have a sequence of Option[(HouseAddress, percent)] where total percent = 100%
-      })
-      .flatten // remove Nones from the Seq
+    conf.getOptional[String]("jobcoin.houseAddresses")
+      .map(addressJson => Json.fromJson[Seq[String]](Json.parse(addressJson)).get)
+      .map(houseAddresses => houseAddresses
+        .map(houseAddress => (houseAddress, Random.between(0.10, 0.25)))
       .map(distribution => {
-        // send message to actor for transfer to occur asynchronously
-        transferActor ! TransferToHouse(requestId, tumbleRequest.fromAddress, distribution._1, getRandomClientAddress(tumbleRequest.toAddresses), distribution._2)
-        })
+        if(distribution._2 < percentLeft) {
+          percentLeft = percentLeft - distribution._2
+          transferActor ! TransferToHouse(requestId, tumbleRequest.fromAddress, distribution._1, getRandomClientAddress(tumbleRequest.toAddresses), tumbleRequest.amount * distribution._2)
+        }
+        else if (percentLeft > 0) {
+          transferActor ! TransferToHouse(requestId, tumbleRequest.fromAddress, distribution._1, getRandomClientAddress(tumbleRequest.toAddresses), tumbleRequest.amount * percentLeft)
+          percentLeft = -1
+        }
+        }))
   }
 
   def getRandomClientAddress(addresses: Seq[String]): String = {

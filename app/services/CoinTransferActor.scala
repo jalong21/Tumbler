@@ -31,8 +31,8 @@ class CoinTransferActor(conf: Configuration,
   cacheManager.addCacheIfAbsent("TumbleCache")
   val cache = cacheManager.getCache("TumbleCache")
 
-  val MAX_WAIT_TIME = conf.getOptional[Int]("jobcoin.maxTumbleDurationMins")
-    .getOrElse(30)
+  val MAX_WAIT_TIME = conf.getOptional[Int]("jobcoin.maxTumbleDurationSeconds")
+    .getOrElse(1800)//30 mins in seconds
 
   override def receive: Receive = {
     case TransferToHouse(tumbleID: String, fromAddress: String, toAddress: String, finalClientAddress: String, amount: Double) => {
@@ -43,8 +43,8 @@ class CoinTransferActor(conf: Configuration,
             // and transfer to client address
             val timeInMins = Random.between(1, MAX_WAIT_TIME)
             val newMessage = TransferToClient(tumbleID, toAddress, finalClientAddress, amount)
-            log.warn(s"transfer to $toAddress complete. transfering to $finalClientAddress in $timeInMins mins")
-            timers.startSingleTimer(newMessage, newMessage, timeInMins.minutes)
+            log.warn(s"transfer to $toAddress complete. transfering to $finalClientAddress in $timeInMins seconds")
+            timers.startSingleTimer(newMessage, newMessage, timeInMins.seconds)
           })
     }
     case TransferToClient(tumbleID: String, fromAddress: String, toAddress: String, amount: Double) => {
