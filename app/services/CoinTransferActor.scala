@@ -3,7 +3,7 @@ package services
 import akka.actor.{Actor, Props, Timers}
 import net.sf.ehcache.{CacheManager, Element}
 import play.api.{Configuration, Logger}
-import services.CoinTransferActor.{TransferToBank, TransferToClient, TransferToHouse}
+import services.CoinTransferActor.{TransferToClient, TransferToHouse}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.DurationInt
@@ -16,9 +16,6 @@ object CoinTransferActor {
   case class TransferToHouse(tumbleID: String, fromAddress: String, toAddress: String, finalClientAddress: String, amount: Double)
 
   case class TransferToClient(tumbleID: String, fromAddress: String, toAddress: String, amount: Double)
-
-  case class TransferToBank(fromAddress: String, toAddress: String, amount: Double)
-
 }
 
 class CoinTransferActor(conf: Configuration,
