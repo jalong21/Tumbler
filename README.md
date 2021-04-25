@@ -52,10 +52,8 @@ I've created 10 house addresses
 Create a job that runs every 24 hours that caps the house addresses.
 Any amount over the cap will be deposited into the "bank" address as payment for the service.
 
-## Step 5: Nice To Haves (TODO, Maybe . . . )
-1) Instead of using pre-made house addresses, create new ones for each tumble. 
-   Alternatively, check that addresses exist and create them if not
-2) Code Cleanup. Some of this isn't quite as pretty as I'd like.
-3) Unit tests. I'd obviously do this in a production environment
-4) Docker Setup. Adding docker files isn't difficult and helps with deployment immensely 
-5) I'm checking that the from address exists, but not all the to addresses. I should add that as well.
+## Step 5: Nice To Haves (If This Were In Production)
+1) Code Cleanup. Some of this isn't quite as pretty as I'd like.
+2) Unit tests. I started this, but ran out of time.
+3) Docker Setup. Adding docker files isn't difficult and helps with deployment immensely 
+4) I'm checking that the from address exists, but not all the to addresses. I should add that as well.

@@ -61,8 +61,5 @@ class CoinTransferActor(conf: Configuration,
               .map(updatedAmount => cache.put(new Element(tumbleID, updatedAmount)))
         })
     }
-    case TransferToBank(fromAddress: String, toAddress: String, amount: Double) => {
-      geminiWS.transferCoins(fromAddress, toAddress, amount)
-    }
   }
 }
