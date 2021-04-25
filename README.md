@@ -53,7 +53,9 @@ Create a job that runs every 24 hours that caps the house addresses.
 Any amount over the cap will be deposited into the "bank" address as payment for the service.
 
 ## Step 5: Nice To Haves (If This Were In Production)
-1) Code Cleanup. Some of this isn't quite as pretty as I'd like.
+1) Code Cleanup. Some of this isn't quite as pretty as I'd like. If I had more time, I would have made it more robust.
+   1) Better formatted responses and better error messages
+   2) Retry logic at various stages 
 2) Unit tests. I started this, but ran out of time.
 3) Docker Setup. Adding docker files isn't difficult and helps with deployment immensely 
 4) I'm checking that the from address exists, but not all the to addresses. I should add that as well.
