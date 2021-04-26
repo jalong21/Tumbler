@@ -19,8 +19,10 @@ Returns: String in the format: "TumbleID:51da3352-3802-44f3-8083-6bfb398e0667 - 
 
 
 # Progression Notes
-Please forgive the oversights. I went from reading the documentation, to seeding the project, to submitting it in 6 or 7 hours of work.
-In a more professional setting, with up-front planning and more time to complete, this would have turned out differently.
+I went from reading the documentation, to seeding the project, to completing and submitting it in 6 or 7 hours of work.
+It runs in Intellij, with the Scala plugin, like any other Scala Play project. 
+I used recent versions of Scala, Play, and Intellij.
+
 ## Step 1: Seeding Project 
 Seeding the project didn't go as smoothly as would have been ideal. 
 I started this project fresh, no template used other than the starting Intellij Scala Setup.
