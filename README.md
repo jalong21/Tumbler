@@ -1,7 +1,7 @@
 
 
 # API
-### POST: /v1/initializeTumble
+### POST: */v1/initializeTumble*
 Body:
 ```json
 {
@@ -12,7 +12,7 @@ Body:
 ```
 Returns: UUID representing the job for polling later
 #
-### GET: /v1/pollForCompletion
+### GET: */v1/pollForCompletion*
 Params: "tumbleId" -> UUID (provided by initializeTumble response)
 
 Returns: String in the format: "TumbleID:51da3352-3802-44f3-8083-6bfb398e0667 - Percent Complete:  12"
@@ -20,7 +20,7 @@ Returns: String in the format: "TumbleID:51da3352-3802-44f3-8083-6bfb398e0667 - 
 
 # Progression Notes
 ## Step 1: Seeding Project 
-Seeding project didn't go as smoothly as would be ideal. 
+Seeding the project didn't go as smoothly as would have been ideal. 
 I started this project fresh, no template used other than the starting Intellij Scala Setup.
 The default scala project in Intellij doesn't seem up to date, or it was expecting a different framework because I had to make changes.
 I've been adding files such as conf/routes for API endpoints and project/plugins.sbt to get play framework set up correctly.
@@ -54,7 +54,7 @@ Any amount over the cap will be deposited into the "bank" address as payment for
 
 ## Step 5: Nice To Haves (If This Were In Production)
 1) Code Cleanup. Some of this isn't quite as pretty as I'd like. If I had more time, I would have made it more robust.
-   1) Better formatted responses and better error messages
+   1) Better formatted responses and better error messages (json response DTO rather than strings)
    2) Retry logic at various stages 
 2) Unit tests. I started this, but ran out of time.
 3) Docker Setup. Adding docker files isn't difficult and helps with deployment immensely 
