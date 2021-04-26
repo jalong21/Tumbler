@@ -7,9 +7,4 @@ object AddressInfo {
   implicit val jsonReads: Reads[AddressInfo] = Json.reads[AddressInfo]
 }
 
-case class Transactions(bye: String)
-object Transactions {
-  implicit val jsonReads: Reads[Transactions] = Json.reads[Transactions]
-}
-
 
