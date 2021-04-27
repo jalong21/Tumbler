@@ -4,7 +4,7 @@ import akka.stream.Materializer
 import akka.util.Timeout
 import com.typesafe.config.{Config, ConfigFactory}
 import controllers.TumbleController
-import models.TumbleDTO
+import models.{TumbleDTO, TumbleInitialized}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
@@ -27,7 +27,7 @@ class TumbleControllerSpec extends PlaySpec with MockitoSugar with GuiceOneAppPe
   val tumbler = mock[JobCoinTumbler]
   val cc = mock[ControllerComponents]
 
-  when(tumbler.initializeTumble(any[TumbleDTO])) thenReturn(Future.successful("UUIDResult"))
+  when(tumbler.initializeTumble(any[TumbleDTO])) thenReturn(Future.successful( TumbleInitialized("UUIDResult") ))
 
   "TumbleController" should {
     "return an error when the body is missing" in {

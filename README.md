@@ -5,17 +5,28 @@
 Body:
 ```json
 {
-"amount":1.0,
-"fromAddress":"fromAddress",
-"toAddresses":["toAddress_01", "toAddress_02", "toAddress_03"]
+   "amount":1.0,
+   "fromAddress":"fromAddress",
+   "toAddresses":["toAddress_01", "toAddress_02", "toAddress_03"]
 }
 ```
-Returns: UUID representing the job for polling later
+Returns: 
+```json
+{
+  "uuid":"[uuid for polling process]"
+}
+```
 #
 ### GET: */v1/pollForCompletion*
 Params: "tumbleId" -> UUID (provided by initializeTumble response)
 
-Returns: String in the format: "TumbleID:51da3352-3802-44f3-8083-6bfb398e0667 - Percent Complete:  12"
+Returns: 
+```json
+{
+   "uuid": String,
+   "percentComplete": Double
+}
+```
 
 
 # Progression Notes
@@ -58,8 +69,7 @@ Any amount over the cap will be deposited into the "bank" address as payment for
 
 ## Step 5: Nice To Haves (If This Were In Production)
 1) Code Cleanup. Some of this isn't quite as pretty as I'd like. If I had more time, I would have made it more robust.
-   1) Better formatted responses and better error messages (json response DTO rather than strings)
-   2) Retry logic at various stages 
-2) Unit tests. I started this, but ran out of time.
-3) Docker Setup. Adding docker files isn't difficult and helps with deployment immensely 
-4) I'm checking that the from address exists, but not all the to addresses. I should add that as well.
+3) Retry logic at various stages 
+4) Unit tests. I started this, but ran out of time.
+5) Docker Setup. Adding docker files isn't difficult and helps with deployment immensely 
+6) I'm checking that the from address exists, but not all the to addresses. I should add that as well.

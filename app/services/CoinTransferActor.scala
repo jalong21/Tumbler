@@ -1,10 +1,12 @@
 package services
 
+import Utils.TumbleCache
 import akka.actor.{Actor, Props, Timers}
 import net.sf.ehcache.{CacheManager, Element}
 import play.api.{Configuration, Logger}
 import services.CoinTransferActor.{TransferToClient, TransferToHouse}
 
+import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.DurationInt
 import scala.util.Random
@@ -23,10 +25,6 @@ class CoinTransferActor(conf: Configuration,
 
   val log = Logger(this.getClass.getName)
 
-  val cacheManager = CacheManager.getInstance()
-  cacheManager.addCacheIfAbsent("TumbleCache")
-  val cache = cacheManager.getCache("TumbleCache")
-
   val MAX_WAIT_TIME = conf.getOptional[Int]("jobcoin.maxTumbleDurationSeconds")
     .getOrElse(1800)//30 mins in seconds
 
@@ -39,8 +37,9 @@ class CoinTransferActor(conf: Configuration,
             // and transfer to client address
             val timeInMins = Random.between(1, MAX_WAIT_TIME)
             val newMessage = TransferToClient(tumbleID, toAddress, finalClientAddress, amount)
-            log.warn(s"transfer to $toAddress complete. transfering to $finalClientAddress in $timeInMins seconds")
-            timers.startSingleTimer(newMessage, newMessage, timeInMins.seconds)
+            log.warn(s"transfer to $toAddress complete. transferring to $finalClientAddress in $timeInMins seconds")
+            // UUID.randomUUID is neccessary as the key so matching messages don't cancel previous messages
+            timers.startSingleTimer(UUID.randomUUID(), newMessage, timeInMins.seconds)
           })
     }
     case TransferToClient(tumbleID: String, fromAddress: String, toAddress: String, amount: Double) => {
@@ -50,13 +49,23 @@ class CoinTransferActor(conf: Configuration,
         .map(_ => {
           // transfer to clientAddress or Bank complete.
           // update cache for tumbleID
-          Option(cache.get(tumbleID).getObjectValue.asInstanceOf[Double])
+          Option(TumbleCache.getCache.get(tumbleID).getObjectValue.asInstanceOf[Double])
             .map(status => {
               log.warn(s"current status: $status. New status: ${status+amount}")
               status + amount
             })
-              .map(updatedAmount => cache.put(new Element(tumbleID, updatedAmount)))
+              .map(updatedAmount => TumbleCache.getCache.put(new Element(tumbleID, updatedAmount)))
         })
     }
+  }
+
+  override def preStart(): Unit = {
+    log.warn("actor starting")
+    super.preStart()
+  }
+
+  override def postStop(): Unit = {
+    log.warn("actor stopped")
+    super.postStop()
   }
 }

@@ -24,7 +24,7 @@ class TumbleController @Inject()(cc: ControllerComponents,
             case Success(tumbleRequest) => {
               log.warn("calling tumbler")
               Try(Await.result(tumbler.initializeTumble(tumbleRequest), 5.minutes)) match {
-                case Success(tumbleId) => Ok(tumbleId)
+                case Success(tumbleId) => Ok(Json.toJson(tumbleId))
                 case Failure(ex) => InternalServerError(s"Error Starting Transfer. ${ex.getMessage}")
               }
             }
@@ -35,7 +35,7 @@ class TumbleController @Inject()(cc: ControllerComponents,
 
   def isTumbleComplete(tumbleId: String) = Action {
     request => Try(Await.result(tumbler.checkForCompletion(tumbleId), 5.minutes)) match {
-      case Success(status) => Ok(status)
+      case Success(status) => Ok(Json.toJson(status))
       case Failure(ex) => InternalServerError(s"Error Checking Status.  ${ex.getMessage}")
     }
   }
