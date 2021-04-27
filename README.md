@@ -23,8 +23,8 @@ Params: "tumbleId" -> UUID (provided by initializeTumble response)
 Returns: 
 ```json
 {
-   "uuid": String,
-   "percentComplete": Double
+   "uuid": "String",
+   "percentComplete": 100.0
 }
 ```
 
