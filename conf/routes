@@ -2,6 +2,7 @@
 
 # First created this health endpoint to be used to test that app is, in fact, running
 GET     /v1/health                  controllers.Health.index
+GET     /v1/redisCheck              controllers.Health.redisCheck
 
 POST    /v1/initializeTumble        controllers.TumbleController.initializeTumble
 GET     /v1/pollForCompletion       controllers.TumbleController.isTumbleComplete(tumbleId: String)
